@@ -385,13 +385,90 @@ let csv = "";
 kelasDipilih.forEach(k => {
 
 csv += "KELAS " + k + "\n";
-csv += "NO;NAMA;L/P;";
 
-// tanggal
-for(let i=1;i<=31;i++) csv += i+";";
+// header
+csv += "NO;NAMA;";
 
-// kolom tambahan
-csv += "S;I;A;% ;RANK\n";
+// tanggal 1–31
+for(let t=1;t<=31;t++){
+csv += t+";";
+}
+
+// tambahan
+csv += "S;I;A;%;RANK\n";
+
+/* ===== ambil data seperti rekap ===== */
+let dataKelas = dataSiswa
+.filter(d => d.kelas == k)
+.map(d => {
+
+let s=0,i=0,a=0;
+
+// hitung
+for(let t=1;t<=31;t++){
+let st = d.absensi[t] || "H";
+
+if(st=="S") s++;
+if(st=="I") i++;
+if(st=="A") a++;
+}
+
+// persen
+let hadir = 31 - (s+i+a);
+let persen = Math.round((hadir/31)*100);
+
+return {
+...d,
+jmlS:s,
+jmlI:i,
+jmlA:a,
+persen:persen
+};
+
+});
+
+// ✅ urutkan seperti rekap
+dataKelas.sort((a,b)=> b.persen - a.persen);
+
+// ✅ ranking RAPAT
+let rank = 1;
+
+dataKelas.forEach((d,i)=>{
+if(i>0 && d.persen < dataKelas[i-1].persen){
+rank++;
+}
+d.rank = rank;
+});
+
+// ===== tulis CSV =====
+dataKelas.forEach(d => {
+
+let row = `${d.no};${d.nama};`;
+
+// isi tanggal
+for(let t=1;t<=31;t++){
+let st = d.absensi[t] || "H";
+
+// ✅ samakan dengan tampilan rekap
+row += (st=="H" ? "" : st) + ";";
+}
+
+// tambah total & ranking
+row += `${d.jmlS};${d.jmlI};${d.jmlA};${d.persen};${d.rank}`;
+
+csv += row + "\n";
+
+});
+
+csv += "\n\n";
+
+});
+
+// ✅ MODE ANDROID (sesuai pilihanmu)
+Android.downloadCSV(csv);
+
+}
+
 
 /* ================= DATA PER KELAS ================= */
 let dataKelas = dataSiswa
