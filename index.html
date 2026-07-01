@@ -423,27 +423,6 @@ if(typeof Android !== "undefined"){
 Android.downloadCSV(csv);
 alert("File berhasil disimpan di folder Download ✅");
 
-// ================= MODE BROWSER =================
-}else{
-
-let blob = new Blob(["\uFEFF"+csv], { type: "text/csv;charset=utf-8;" });
-let url = URL.createObjectURL(blob);
-
-let a = document.createElement("a");
-a.href = url;
-a.download = "Absensi_Siswa.csv";
-
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-
-URL.revokeObjectURL(url);
-
-alert("File berhasil didownload ✅");
-
-}
-
-}
 
 // START
 window.onload=function(){
