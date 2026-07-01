@@ -416,13 +416,19 @@ csv += row + "\n";
 
 });
 
-
-// ================= MODE ANDROID =================
+// ✅ KHUSUS ANDROID SAJA
 if(typeof Android !== "undefined"){
 
 Android.downloadCSV(csv);
 alert("File berhasil disimpan di folder Download ✅");
 
+}else{
+
+alert("Hanya bisa digunakan di aplikasi Android");
+
+}
+
+}
 
 // START
 window.onload=function(){
