@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
+<meta charset="utf-8"><html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Absensi Sekolah</title>
 
@@ -10,37 +8,39 @@ body{font-family:Arial;margin:0;background:#f4f6f9;}
 
 .header{
 background:#007BFF;color:white;
-padding:12px;text-align:center;font-size:16px;
+padding:12px;text-align:center;
 }
 
-.container{padding:8px;}
+.container{padding:10px;}
 
 .card{
-background:white;padding:10px;margin-bottom:10px;border-radius:10px;
+background:white;
+padding:10px;
+margin-bottom:10px;
+border-radius:10px;
 }
 
 select,input{
 width:100%;
-padding:10px;margin:5px 0;font-size:14px;
+padding:10px;
+margin:5px 0;
 }
 
 button{
 width:100%;
 padding:10px;
 margin:3px 0;
-font-size:14px;
-border:none;border-radius:6px;
-cursor:pointer;
+border:none;
+border-radius:5px;
+color:white;
 }
 
-.btn-save{background:#28a745;color:white;}
-.btn-edit{background:#ffc107;}
-.btn-clear{background:#dc3545;color:white;}
-.btn-download{background:#007BFF;color:white;}
+.btn-save{background:#28a745;}
+.btn-edit{background:#ffc107;color:black;}
+.btn-clear{background:#dc3545;}
+.btn-download{background:#007BFF;}
 
-button:active{opacity:0.7;}
-
-.h{background:#28a745;color:white;}
+.h{background:#28a745;}
 .s{background:#ffc107;}
 .i{background:#17a2b8;color:white;}
 .a{background:#dc3545;color:white;}
@@ -57,36 +57,13 @@ border-collapse:collapse;
 th,td{
 border:1px solid #ddd;
 padding:6px;
-font-size:12px;
 text-align:center;
 }
 
-th{
-background:#007BFF;color:white;
-}
+th{background:#007BFF;color:white;}
 
-.kelas-box{
-display:flex;
-flex-wrap:wrap;
-}
-
-.kelas-box label{
-width:33%;
-font-size:13px;
-}
-
-/* desktop */
-@media(min-width:768px){
-
-select,input{width:auto;}
-button{width:auto;}
-
-.container{
-max-width:900px;
-margin:auto;
-}
-
-}
+.kelas-box{display:flex;flex-wrap:wrap;}
+.kelas-box label{width:33%;}
 </style>
 </head>
 
@@ -99,15 +76,9 @@ margin:auto;
 <div class="card">
 
 <select id="kelas" onchange="render()">
-<option>7A</option>
-<option>7B</option>
-<option>7C</option>
-<option>7D</option>
-<option>7E</option>
-<option>7F</option>
-<option>7G</option>
-<option>7H</option>
-<option>7I</option>
+<option>7A</option><option>7B</option><option>7C</option>
+<option>7D</option><option>7E</option><option>7F</option>
+<option>7G</option><option>7H</option><option>7I</option>
 </select>
 
 <input id="tgl" type="number" min="1" max="31">
@@ -128,7 +99,7 @@ margin:auto;
 <label><input type="checkbox" value="7I" class="kelasDownload">7I</label>
 </div>
 
-<button class="btn-download" onclick="downloadCSV()">Download Gabungan</button>
+<button class="btn-download" onclick="downloadCSV()">Download</button>
 
 </div>
 
@@ -138,13 +109,8 @@ margin:auto;
 <table>
 <thead>
 <tr>
-<th>No</th>
-<th>Nama</th>
-<th>L/P</th>
-<th>H</th>
-<th>S</th>
-<th>I</th>
-<th>A</th>
+<th>No</th><th>Nama</th><th>L/P</th>
+<th>H</th><th>S</th><th>I</th><th>A</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
@@ -160,44 +126,40 @@ margin:auto;
 
 <script>
 
-var edit = true;
+let edit = true;
 
-// ✅ contoh data (lanjutkan)
-var dataSiswa = [
+// DATA SISWA
+let dataSiswa=[
 {kelas:"7A",no:1,nama:"Achmad",jk:"L",absensi:{}},
 {kelas:"7A",no:2,nama:"Adam",jk:"L",absensi:{}},
 {kelas:"7A",no:3,nama:"Afiyah",jk:"P",absensi:{}},
-{kelas:"7A",no:4,nama:"Agilah",jk:"P",absensi:{}},
-{kelas:"7A",no:5,nama:"Farhan",jk:"L",absensi:{}},
 
 {kelas:"7B",no:1,nama:"Yahya",jk:"L",absensi:{}},
 {kelas:"7B",no:2,nama:"Aiman",jk:"L",absensi:{}},
-{kelas:"7B",no:3,nama:"Arif",jk:"L",absensi:{}},
-{kelas:"7B",no:4,nama:"Cantika",jk:"P",absensi:{}},
-{kelas:"7B",no:5,nama:"Danang",jk:"L",absensi:{}}
+{kelas:"7B",no:3,nama:"Arif",jk:"L",absensi:{}}
 ];
 
 // SAVE
 function save(){
-localStorage.setItem("absen", JSON.stringify(dataSiswa));
-alert("Data tersimpan ✅");
+localStorage.setItem("absen",JSON.stringify(dataSiswa));
+alert("Tersimpan ✅");
 }
 
 // LOAD
 function load(){
-let d = localStorage.getItem("absen");
-if(d) dataSiswa = JSON.parse(d);
+let d=localStorage.getItem("absen");
+if(d) dataSiswa=JSON.parse(d);
 }
 
 // EDIT MODE
 function editMode(){
-edit = !edit;
-alert(edit ? "Mode Edit Aktif" : "Mode Edit Nonaktif");
+edit=!edit;
+alert(edit?"Edit Aktif":"Edit Nonaktif");
 }
 
 // CLEAR
 function clearData(){
-if(confirm("Hapus semua data absensi?")){
+if(confirm("Hapus semua data?")){
 dataSiswa.forEach(d=>d.absensi={});
 save();
 render();
@@ -206,12 +168,12 @@ render();
 
 // AUTO HADIR
 function autoHadir(){
-let k = kelas.value;
-let t = tgl.value;
+let k=kelas.value;
+let t=tgl.value;
 
 dataSiswa.forEach(d=>{
 if(d.kelas==k && !d.absensi[t]){
-d.absensi[t] = "H";
+d.absensi[t]="H";
 }
 });
 }
@@ -219,10 +181,8 @@ d.absensi[t] = "H";
 // RENDER
 function render(){
 
-window.scrollTo(0,200);
-
-let k = kelas.value;
-let t = tgl.value;
+let k=kelas.value;
+let t=tgl.value;
 if(!t) return;
 
 autoHadir();
@@ -233,7 +193,7 @@ let h=0,s=0,i=0,a=0;
 dataSiswa.forEach((d,iIdx)=>{
 if(d.kelas==k){
 
-let st = d.absensi[t] || "H";
+let st=d.absensi[t]||"H";
 
 if(st=="H")h++;
 if(st=="S")s++;
@@ -253,27 +213,26 @@ tbody+=`
 }
 });
 
-document.getElementById("tbody").innerHTML = tbody;
+document.getElementById("tbody").innerHTML=tbody;
 
-// REKAP HARIAN
-document.getElementById("rekapHarian").innerHTML =
-"Tanggal "+t+" → H:"+h+" | S:"+s+" | I:"+i+" | A:"+a;
+// rekap harian
+document.getElementById("rekapHarian").innerHTML=
+`Tanggal ${t} → H:${h} | S:${s} | I:${i} | A:${a}`;
 
-// REKAP BULANAN
 buatRekapBulanan(k);
-
 }
 
-// SET
+// SET ABSENSI
 function set(i,status){
-
 if(!edit){
-alert("Aktifkan mode edit dulu!");
+alert("Aktifkan edit!");
 return;
 }
 
-let t = tgl.value;
-dataSiswa[i].absensi[t] = status;
+let t=tgl.value;
+dataSiswa[i].absensi[t]=status;
+
+localStorage.setItem("absen",JSON.stringify(dataSiswa));
 
 render();
 }
@@ -281,340 +240,95 @@ render();
 // REKAP BULANAN
 function buatRekapBulanan(k){
 
-let dataKelas = dataSiswa
+let data=dataSiswa
 .filter(d=>d.kelas==k)
 .map(d=>{
 
 let s=0,i=0,a=0;
 
-// hitung S I A
 for(let t=1;t<=31;t++){
-let st = d.absensi[t] || "H";
-if(st=="S") s++;
-if(st=="I") i++;
-if(st=="A") a++;
+let st=d.absensi[t]||"H";
+if(st=="S")s++;
+if(st=="I")i++;
+if(st=="A")a++;
 }
 
-// hitung hadir
-let totalTidak = s+i+a;
-let hadir = 31 - totalTidak;
+let hadir=31-(s+i+a);
+let persen=Math.round((hadir/31)*100);
 
-// persen kehadiran
-let persen = Math.round((hadir/31)*100);
-
-return {
-...d,
-jmlS:s,
-jmlI:i,
-jmlA:a,
-persen:persen
-};
-
+return {...d,jmlS:s,jmlI:i,jmlA:a,persen};
 });
 
-// ✅ ranking (descending)
-dataKelas.sort((a,b)=> b.persen - a.persen);
+// sort
+data.sort((a,b)=>b.persen-a.persen);
 
-// ✅ ranking RAPAT (nilai sama = rank sama)
-let rank = 1;
-
-dataKelas.forEach((d,i)=>{
-
-if(i > 0 && d.persen < dataKelas[i-1].persen){
-rank++;  // naik hanya jika persen turun
-}
-
-d.rank = rank;
-
+// rank rapat
+let rank=1;
+data.forEach((d,i)=>{
+if(i>0 && d.persen<data[i-1].persen)rank++;
+d.rank=rank;
 });
 
-// ================= TAMPILKAN =================
-let html = "<br><b>Rekap Bulanan</b><div class='table-container'><table><tr><th>No</th><th>Nama</th>";
+// tampil
+let html="<br><b>Rekap Bulanan</b><table><tr><th>No</th><th>Nama</th>";
 
-// kolom tanggal
-for(let t=1;t<=31;t++){
-html += "<th>"+t+"</th>";
-}
+for(let t=1;t<=31;t++) html+="<th>"+t+"</th>";
 
-// tambahan
-html += "<th>S</th><th>I</th><th>A</th><th>%</th><th>Rank</th></tr>";
+html+="<th>%</th><th>Rank</th></tr>";
 
-// isi
-dataKelas.forEach(d=>{
-
-html += "<tr><td>"+d.no+"</td><td>"+d.nama+"</td>";
+data.forEach(d=>{
+html+=`<tr><td>${d.no}</td><td>${d.nama}</td>`;
 
 for(let t=1;t<=31;t++){
-let st = d.absensi[t] || "H";
-html += "<td>"+(st=="H"?"":st)+"</td>";
+let st=d.absensi[t]||"H";
+html+=`<td>${st=="H"?"":st}</td>`;
 }
 
-html+=`
-<td>${d.jmlS}</td>
-<td>${d.jmlI}</td>
-<td>${d.jmlA}</td>
-<td>${d.persen}%</td>
-<td>${d.rank}</td>
-`;
-
-html += "</tr>";
-
+html+=`<td>${d.persen}%</td><td>${d.rank}</td></tr>`;
 });
 
-html += "</table></div>";
+html+="</table>";
 
-document.getElementById("rekapBulanan").innerHTML = html;
-
+document.getElementById("rekapBulanan").innerHTML=html;
 }
 
-// DOWNLOAD
-function downloadCSV(){function downloadCSV minimal 1 kelas!");
+// DOWNLOAD ANDROID
+function downloadCSV(){
+
+let kelasDipilih=[];
+document.querySelectorAll(".kelasDownload:checked")
+.forEach(cb=>kelasDipilih.push(cb.value));
+
+if(kelasDipilih.length==0){
+alert("Pilih kelas!");
 return;
 }
 
-let csv = "";
+let csv="";
 
-kelasDipilih.forEach(k => {
+kelasDipilih.forEach(k=>{
 
-csv += "KELAS " + k + "\n";
+csv+="KELAS "+k+"\n";
+csv+="NO;NAMA;";
 
-csv += "NO;NAMA;";
-
-for(let t=1;t<=31;t++){
-csv += t+";";
-}
-
-csv += "S;I;A;%;RANK\n";
-
-let dataKelas = dataSiswa
-.filter(d => d.kelas == k)
-.map(d => {
-
-let s=0,i=0,a=0;
-
-for(let t=1;t<=31;t++){
-let st = d.absensi[t] || "H";
-if(st=="S") s++;
-if(st=="I") i++;
-if(st=="A") a++;
-}
-
-let hadir = 31 - (s+i+a);
-let persen = Math.round((hadir/31)*100);
-
-return {...d,jmlS:s,jmlI:i,jmlA:a,persen};
-
-});
-
-dataKelas.sort((a,b)=> b.persen - a.persen);
-
-let rank = 1;
-dataKelas.forEach((d,i)=>{
-if(i>0 && d.persen < dataKelas[i-1].persen) rank++;
-d.rank = rank;
-});
-
-dataKelas.forEach(d => {
-
-let row = `${d.no};${d.nama};`;
-
-for(let t=1;t<=31;t++){
-let st = d.absensi[t] || "H";
-row += (st=="H" ? "" : st) + ";";
-}
-
-row += `${d.jmlS};${d.jmlI};${d.jmlA};${d.persen};${d.rank}`;
-
-csv += row + "\n";
-
-});
-
-csv += "\n\n";
+for(let t=1;t<=31;t++) csv+=t+";";
+csv+="%;RANK\n";
 
 });
 
 Android.downloadCSV(csv);
 }
-
-
-let kelasDipilih = [];
-
-document.querySelectorAll(".kelasDownload:checked")
-.forEach(cb => kelasDipilih.push(cb.value));
-
-if(kelasDipilih.length === 0){
-
-
-// header
-csv += "NO;NAMA;";
-
-// tanggal 1–31
-for(let t=1;t<=31;t++){
-csv += t+";";
-}
-
-// tambahan
-csv += "S;I;A;%;RANK\n";
-
-/* ===== ambil data seperti rekap ===== */
-let dataKelas = dataSiswa
-.filter(d => d.kelas == k)
-.map(d => {
-
-let s=0,i=0,a=0;
-
-// hitung
-for(let t=1;t<=31;t++){
-let st = d.absensi[t] || "H";
-
-if(st=="S") s++;
-if(st=="I") i++;
-if(st=="A") a++;
-}
-
-// persen
-let hadir = 31 - (s+i+a);
-let persen = Math.round((hadir/31)*100);
-
-return {
-...d,
-jmlS:s,
-jmlI:i,
-jmlA:a,
-persen:persen
-};
-
-});
-
-// ✅ urutkan seperti rekap
-dataKelas.sort((a,b)=> b.persen - a.persen);
-
-// ✅ ranking RAPAT
-let rank = 1;
-
-dataKelas.forEach((d,i)=>{
-if(i>0 && d.persen < dataKelas[i-1].persen){
-rank++;
-}
-d.rank = rank;
-});
-
-// ===== tulis CSV =====
-dataKelas.forEach(d => {
-
-let row = `${d.no};${d.nama};`;
-
-// isi tanggal
-for(let t=1;t<=31;t++){
-let st = d.absensi[t] || "H";
-
-// ✅ samakan dengan tampilan rekap
-row += (st=="H" ? "" : st) + ";";
-}
-
-// tambah total & ranking
-row += `${d.jmlS};${d.jmlI};${d.jmlA};${d.persen};${d.rank}`;
-
-csv += row + "\n";
-
-});
-
-csv += "\n\n";
-
-});
-
-// ✅ MODE ANDROID (sesuai pilihanmu)
-Android.downloadCSV(csv);
-
-}
-
-
-/* ================= DATA PER KELAS ================= */
-let dataKelas = dataSiswa
-.filter(d => d.kelas == k)
-.map(d => {
-
-let s=0,i=0,a=0;
-
-// hitung S I A
-for(let t=1;t<=31;t++){
-let st = d.absensi[t] || "H";
-
-if(st=="S") s++;
-if(st=="I") i++;
-if(st=="A") a++;
-}
-
-// hitung persen
-let hadir = 31 - (s+i+a);
-let persen = Math.round((hadir/31)*100);
-
-return {
-...d,
-jmlS:s,
-jmlI:i,
-jmlA:a,
-persen:persen
-};
-
-});
-
-// urutkan berdasarkan persen
-dataKelas.sort((a,b)=> b.persen - a.persen);
-
-// ✅ ranking RAPAT (tidak lompat)
-let rank = 1;
-
-dataKelas.forEach((d,i)=>{
-
-if(i > 0 && d.persen < dataKelas[i-1].persen){
-rank++;
-}
-
-d.rank = rank;
-
-});
-
-// ================= TULIS KE CSV =================
-dataKelas.forEach(d => {
-
-let row = `${d.no};${d.nama};${d.jk};`;
-
-for(let t=1;t<=31;t++){
-let st = d.absensi[t] || "H";
-row += st + ";";
-}
-
-row += `${d.jmlS};${d.jmlI};${d.jmlA};${d.persen};${d.rank}`;
-
-csv += row + "\n";
-
-});
-
-csv += "\n\n";
-
-});
-
-
-/* ✅ MODE ANDROID (sesuai permintaan kamu) */
-Android.downloadCSV(csv);
-
-}
-
 
 // START
 window.onload=function(){
-
 load();
-
-let today=new Date().getDate();
-document.getElementById("tgl").value=today;
-
+tgl.value=new Date().getDate();
 render();
-
 }
 
 </script>
 
 </body>
+  </head>
 </html>
+
