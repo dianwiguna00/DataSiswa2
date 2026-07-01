@@ -381,8 +381,8 @@ return;
 
 let csv = "";
 
-// HEADER
-csv += "ABSENSI SISWA\n";
+// ✅ HEADER
+csv += "DATA ABSENSI SISWA\n";
 
 kelasDipilih.forEach(k=>{
 
@@ -392,7 +392,7 @@ csv += "NO;NAMA;L/P;";
 for(let i=1;i<=31;i++) csv += i + ";";
 csv += "S;I;A\n";
 
-// DATA
+// ✅ DATA
 dataSiswa.filter(d=>d.kelas==k).forEach(d=>{
 
 let row = `${d.no};${d.nama};${d.jk};`;
@@ -400,10 +400,12 @@ let row = `${d.no};${d.nama};${d.jk};`;
 let s=0,i=0,a=0;
 
 for(let t=1;t<=31;t++){
-let st=d.absensi[t]||"H";
-if(st=="S")s++;
-if(st=="I")i++;
-if(st=="A")a++;
+let st = d.absensi[t] || "H";
+
+if(st=="S") s++;
+if(st=="I") i++;
+if(st=="A") a++;
+
 row += st + ";";
 }
 
@@ -414,12 +416,33 @@ csv += row + "\n";
 
 });
 
-// ✅ Kirim ke Android
+
+// ================= MODE ANDROID =================
 if(typeof Android !== "undefined"){
+
 Android.downloadCSV(csv);
+alert("File berhasil disimpan di folder Download ✅");
+
+// ================= MODE BROWSER =================
 }else{
-alert("Fitur download khusus aplikasi Android");
+
+let blob = new Blob(["\uFEFF"+csv], { type: "text/csv;charset=utf-8;" });
+let url = URL.createObjectURL(blob);
+
+let a = document.createElement("a");
+a.href = url;
+a.download = "Absensi_Siswa.csv";
+
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+
+URL.revokeObjectURL(url);
+
+alert("File berhasil didownload ✅");
+
 }
+
 }
 
 // START
