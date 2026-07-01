@@ -388,9 +388,11 @@ kelasDipilih.forEach(k => {
 csv += "KELAS " + k + "\n";
 csv += "NO;NAMA;L/P;";
 
+// tanggal
 for(let i=1;i<=31;i++) csv += i+";";
 csv += "S;I;A\n";
 
+// isi data
 dataSiswa
 .filter(d => d.kelas == k)
 .sort((a,b)=>a.no-b.no)
@@ -401,6 +403,7 @@ let row = `${d.no};${d.nama};${d.jk};`;
 let s=0,i=0,a=0;
 
 for(let t=1;t<=31;t++){
+
 let st = d.absensi[t] || "H";
 
 if(st=="S") s++;
@@ -419,24 +422,9 @@ csv += "\n\n";
 
 });
 
-
-// ✅ DETEKSI MODE
-if(typeof Android !== "undefined" && Android.downloadCSV){
-
-// ✅ MODE APK
+// ✅ KIRIM KE ANDROID SAJA
 Android.downloadCSV(csv);
 
-}else{
-
-// ✅ MODE BROWSER
-let blob = new Blob([csv]);
-let link = document.createElement("a");
-
-link.href = URL.createObjectURL(blob);
-link.download = "Absensi_Lengkap.csv";
-link.click();
-
-}
 }
 
 
