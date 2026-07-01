@@ -381,19 +381,21 @@ return;
 
 let csv = "";
 
-// ✅ HEADER
+// ================= HEADER =================
 csv += "DATA ABSENSI SISWA\n";
 
+// ================= DATA =================
 kelasDipilih.forEach(k=>{
 
-csv += "\nKELAS " + k + "\n";
+csv += "KELAS " + k + "\n";
 csv += "NO;NAMA;L/P;";
 
 for(let i=1;i<=31;i++) csv += i + ";";
 csv += "S;I;A\n";
 
-// ✅ DATA
-dataSiswa.filter(d=>d.kelas==k).forEach(d=>{
+dataSiswa
+.filter(d=>d.kelas==k)
+.forEach(d=>{
 
 let row = `${d.no};${d.nama};${d.jk};`;
 
@@ -410,23 +412,15 @@ row += st + ";";
 }
 
 row += `${s};${i};${a}`;
+
 csv += row + "\n";
 
 });
 
 });
 
-// ✅ KHUSUS ANDROID SAJA
-if(typeof Android !== "undefined"){
-
+// ================= ANDROID =================
 Android.downloadCSV(csv);
-alert("File berhasil disimpan di folder Download ✅");
-
-}else{
-
-alert("Hanya bisa digunakan di aplikasi Android");
-
-}
 
 }
 
