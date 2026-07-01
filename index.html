@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absensi Sekolah</title>
+
+<style>
+body{font-family:Arial;margin:0;background:#f4f6f9;}
+
+.header{
+background:#007BFF;color:white;
+padding:12px;text-align:center;font-size:16px;
+}
+
+.container{padding:8px;}
+
+.card{
+background:white;padding:10px;margin-bottom:10px;border-radius:10px;
+}
+
+select,input{
+width:100%;
+padding:10px;margin:5px 0;font-size:14px;
+}
+
+button{
+width:100%;
+padding:10px;
+margin:3px 0;
+font-size:14px;
+border:none;border-radius:6px;
+cursor:pointer;
+}
+
+.btn-save{background:#28a745;color:white;}
+.btn-edit{background:#ffc107;}
+.btn-clear{background:#dc3545;color:white;}
+.btn-download{background:#007BFF;color:white;}
+
+button:active{opacity:0.7;}
+
+.h{background:#28a745;color:white;}
+.s{background:#ffc107;}
+.i{background:#17a2b8;color:white;}
+.a{background:#dc3545;color:white;}
+
+.active{border:2px solid black;}
+
+.table-container{overflow-x:auto;}
+
+table{
+min-width:600px;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:6px;
+font-size:12px;
+text-align:center;
+}
+
+th{
+background:#007BFF;color:white;
+}
+
+.kelas-box{
+display:flex;
+flex-wrap:wrap;
+}
+
+.kelas-box label{
+width:33%;
+font-size:13px;
+}
+
+/* desktop */
+@media(min-width:768px){
+
+select,input{width:auto;}
+button{width:auto;}
+
+.container{
+max-width:900px;
+margin:auto;
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">ABSENSI SISWA</div>
+
+<div class="container">
+
+<div class="card">
+
+<select id="kelas" onchange="render()">
+<option>7A</option>
+<option>7B</option>
+<option>7C</option>
+<option>7D</option>
+<option>7E</option>
+<option>7F</option>
+<option>7G</option>
+<option>7H</option>
+<option>7I</option>
+</select>
+
+<input id="tgl" type="number" min="1" max="31">
+
+<button class="btn-save" onclick="save()">Simpan</button>
+<button class="btn-edit" onclick="editMode()">Edit/Simpan</button>
+<button class="btn-clear" onclick="clearData()">Bersihkan</button>
+
+<div class="kelas-box">
+<label><input type="checkbox" value="7A" class="kelasDownload">7A</label>
+<label><input type="checkbox" value="7B" class="kelasDownload">7B</label>
+<label><input type="checkbox" value="7C" class="kelasDownload">7C</label>
+<label><input type="checkbox" value="7D" class="kelasDownload">7D</label>
+<label><input type="checkbox" value="7E" class="kelasDownload">7E</label>
+<label><input type="checkbox" value="7F" class="kelasDownload">7F</label>
+<label><input type="checkbox" value="7G" class="kelasDownload">7G</label>
+<label><input type="checkbox" value="7H" class="kelasDownload">7H</label>
+<label><input type="checkbox" value="7I" class="kelasDownload">7I</label>
+</div>
+
+<button class="btn-download" onclick="downloadCSV()">Download Gabungan</button>
+
+</div>
+
+<div class="card">
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>No</th>
+<th>Nama</th>
+<th>L/P</th>
+<th>H</th>
+<th>S</th>
+<th>I</th>
+<th>A</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<div id="rekapHarian" style="font-weight:bold;"></div>
+<div id="rekapBulanan"></div>
+
+</div>
+
+</div>
+
+<script>
+
+var edit = true;
+
+// ✅ contoh data (lanjutkan)
+var dataSiswa = [
+{kelas:"7A",no:1,nama:"Achmad",jk:"L",absensi:{}},
+{kelas:"7A",no:2,nama:"Adam",jk:"L",absensi:{}},
+{kelas:"7A",no:3,nama:"Afiyah",jk:"P",absensi:{}},
+{kelas:"7A",no:4,nama:"Agilah",jk:"P",absensi:{}},
+{kelas:"7A",no:5,nama:"Farhan",jk:"L",absensi:{}},
+
+{kelas:"7B",no:1,nama:"Yahya",jk:"L",absensi:{}},
+{kelas:"7B",no:2,nama:"Aiman",jk:"L",absensi:{}},
+{kelas:"7B",no:3,nama:"Arif",jk:"L",absensi:{}},
+{kelas:"7B",no:4,nama:"Cantika",jk:"P",absensi:{}},
+{kelas:"7B",no:5,nama:"Danang",jk:"L",absensi:{}}
+];
+
+// SAVE
+function save(){
+localStorage.setItem("absen", JSON.stringify(dataSiswa));
+alert("Data tersimpan ✅");
+}
+
+// LOAD
+function load(){
+let d = localStorage.getItem("absen");
+if(d) dataSiswa = JSON.parse(d);
+}
+
+// EDIT MODE
+function editMode(){
+edit = !edit;
+alert(edit ? "Mode Edit Aktif" : "Mode Edit Nonaktif");
+}
+
+// CLEAR
+function clearData(){
+if(confirm("Hapus semua data absensi?")){
+dataSiswa.forEach(d=>d.absensi={});
+save();
+render();
+}
+}
+
+// AUTO HADIR
+function autoHadir(){
+let k = kelas.value;
+let t = tgl.value;
+
+dataSiswa.forEach(d=>{
+if(d.kelas==k && !d.absensi[t]){
+d.absensi[t] = "H";
+}
+});
+}
+
+// RENDER
+function render(){
+
+window.scrollTo(0,200);
+
+let k = kelas.value;
+let t = tgl.value;
+if(!t) return;
+
+autoHadir();
+
+let tbody="";
+let h=0,s=0,i=0,a=0;
+
+dataSiswa.forEach((d,iIdx)=>{
+if(d.kelas==k){
+
+let st = d.absensi[t] || "H";
+
+if(st=="H")h++;
+if(st=="S")s++;
+if(st=="I")i++;
+if(st=="A")a++;
+
+tbody+=`
+<tr>
+<td>${d.no}</td>
+<td>${d.nama}</td>
+<td>${d.jk}</td>
+<td><button class="h ${st=='H'?'active':''}" onclick="set(${iIdx},'H')">H</button></td>
+<td><button class="s ${st=='S'?'active':''}" onclick="set(${iIdx},'S')">S</button></td>
+<td><button class="i ${st=='I'?'active':''}" onclick="set(${iIdx},'I')">I</button></td>
+<td><button class="a ${st=='A'?'active':''}" onclick="set(${iIdx},'A')">A</button></td>
+</tr>`;
+}
+});
+
+document.getElementById("tbody").innerHTML = tbody;
+
+// REKAP HARIAN
+document.getElementById("rekapHarian").innerHTML =
+"Tanggal "+t+" → H:"+h+" | S:"+s+" | I:"+i+" | A:"+a;
+
+// REKAP BULANAN
+buatRekapBulanan(k);
+
+}
+
+// SET
+function set(i,status){
+
+if(!edit){
+alert("Aktifkan mode edit dulu!");
+return;
+}
+
+let t = tgl.value;
+dataSiswa[i].absensi[t] = status;
+
+render();
+}
+
+// REKAP BULANAN
+function buatRekapBulanan(k){
+
+let dataKelas = dataSiswa
+.filter(d=>d.kelas==k)
+.map(d=>{
+
+let s=0,i=0,a=0;
+
+// hitung S I A
+for(let t=1;t<=31;t++){
+let st = d.absensi[t] || "H";
+if(st=="S") s++;
+if(st=="I") i++;
+if(st=="A") a++;
+}
+
+// hitung hadir
+let totalTidak = s+i+a;
+let hadir = 31 - totalTidak;
+
+// persen kehadiran
+let persen = Math.round((hadir/31)*100);
+
+return {
+...d,
+jmlS:s,
+jmlI:i,
+jmlA:a,
+persen:persen
+};
+
+});
+
+// ✅ ranking (descending)
+dataKelas.sort((a,b)=> b.persen - a.persen);
+
+// ✅ ranking RAPAT (nilai sama = rank sama)
+let rank = 1;
+
+dataKelas.forEach((d,i)=>{
+
+if(i > 0 && d.persen < dataKelas[i-1].persen){
+rank++;  // naik hanya jika persen turun
+}
+
+d.rank = rank;
+
+});
+
+// ================= TAMPILKAN =================
+let html = "<br><b>Rekap Bulanan</b><div class='table-container'><table><tr><th>No</th><th>Nama</th>";
+
+// kolom tanggal
+for(let t=1;t<=31;t++){
+html += "<th>"+t+"</th>";
+}
+
+// tambahan
+html += "<th>S</th><th>I</th><th>A</th><th>%</th><th>Rank</th></tr>";
+
+// isi
+dataKelas.forEach(d=>{
+
+html += "<tr><td>"+d.no+"</td><td>"+d.nama+"</td>";
+
+for(let t=1;t<=31;t++){
+let st = d.absensi[t] || "H";
+html += "<td>"+(st=="H"?"":st)+"</td>";
+}
+
+html+=`
+<td>${d.jmlS}</td>
+<td>${d.jmlI}</td>
+<td>${d.jmlA}</td>
+<td>${d.persen}%</td>
+<td>${d.rank}</td>
+`;
+
+html += "</tr>";
+
+});
+
+html += "</table></div>";
+
+document.getElementById("rekapBulanan").innerHTML = html;
+
+}
+
+// DOWNLOAD
+function downloadCSV(){
+
+let kelasDipilih = [];
+document.querySelectorAll(".kelasDownload:checked")
+.forEach(cb => kelasDipilih.push(cb.value));
+
+if(kelasDipilih.length===0){
+alert("Pilih kelas dulu!");
+return;
+}
+
+let csv="";
+
+kelasDipilih.forEach(k=>{
+
+csv+="KELAS "+k+"\n";
+csv+="NO;NAMA;L/P;";
+
+for(let i=1;i<=31;i++) csv+=i+";";
+csv+="S;I;A\n";
+
+dataSiswa.filter(d=>d.kelas==k).forEach(d=>{
+
+let row=`${d.no};${d.nama};${d.jk};`;
+
+let s=0,i=0,a=0;
+
+for(let t=1;t<=31;t++){
+let st=d.absensi[t]||"H";
+if(st=="S")s++;
+if(st=="I")i++;
+if(st=="A")a++;
+row+=st+";";
+}
+
+row+=`${s};${i};${a}`;
+csv+=row+"\n";
+
+});
+
+csv+="\n\n";
+
+});
+
+let blob=new Blob([csv]);
+let link=document.createElement("a");
+
+link.href=URL.createObjectURL(blob);
+link.download="Absensi_Lengkap.csv";
+link.click();
+
+}
+
+// START
+window.onload=function(){
+
+load();
+
+let today=new Date().getDate();
+document.getElementById("tgl").value=today;
+
+render();
+
+}
+
+</script>
+
+</body>
+</html>
