@@ -368,15 +368,7 @@ document.getElementById("rekapBulanan").innerHTML = html;
 }
 
 // DOWNLOAD
-function downloadCSV(){
-
-let kelasDipilih = [];
-
-document.querySelectorAll(".kelasDownload:checked")
-.forEach(cb => kelasDipilih.push(cb.value));
-
-if(kelasDipilih.length === 0){
-alert("Pilih minimal 1 kelas!");
+function downloadCSV(){function downloadCSV minimal 1 kelas!");
 return;
 }
 
@@ -385,6 +377,73 @@ let csv = "";
 kelasDipilih.forEach(k => {
 
 csv += "KELAS " + k + "\n";
+
+csv += "NO;NAMA;";
+
+for(let t=1;t<=31;t++){
+csv += t+";";
+}
+
+csv += "S;I;A;%;RANK\n";
+
+let dataKelas = dataSiswa
+.filter(d => d.kelas == k)
+.map(d => {
+
+let s=0,i=0,a=0;
+
+for(let t=1;t<=31;t++){
+let st = d.absensi[t] || "H";
+if(st=="S") s++;
+if(st=="I") i++;
+if(st=="A") a++;
+}
+
+let hadir = 31 - (s+i+a);
+let persen = Math.round((hadir/31)*100);
+
+return {...d,jmlS:s,jmlI:i,jmlA:a,persen};
+
+});
+
+dataKelas.sort((a,b)=> b.persen - a.persen);
+
+let rank = 1;
+dataKelas.forEach((d,i)=>{
+if(i>0 && d.persen < dataKelas[i-1].persen) rank++;
+d.rank = rank;
+});
+
+dataKelas.forEach(d => {
+
+let row = `${d.no};${d.nama};`;
+
+for(let t=1;t<=31;t++){
+let st = d.absensi[t] || "H";
+row += (st=="H" ? "" : st) + ";";
+}
+
+row += `${d.jmlS};${d.jmlI};${d.jmlA};${d.persen};${d.rank}`;
+
+csv += row + "\n";
+
+});
+
+csv += "\n\n";
+
+});
+
+Android.downloadCSV(csv);
+}
+
+
+let kelasDipilih = [];
+
+document.querySelectorAll(".kelasDownload:checked")
+.forEach(cb => kelasDipilih.push(cb.value));
+
+if(kelasDipilih.length === 0){
+
 
 // header
 csv += "NO;NAMA;";
